@@ -90,7 +90,7 @@ public class InvoiceFrame extends JFrame {
         this.OpenMenuItem.addActionListener(this.controller);
         this.SaveMenuItem = new JMenuItem();
         this.SaveMenuItem.addActionListener(this.controller);
-      //  this.setDefaultCloseOperation(3);
+        this.setDefaultCloseOperation(3);
         this.tableInvoiceHeader.setModel(new DefaultTableModel(new Object[0][], new String[0]));
         this.tableInvoiceHeader.setShowGrid(true);
         this.jScrollPane1.setViewportView(this.tableInvoiceHeader);
