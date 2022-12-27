@@ -18,8 +18,11 @@ import javax.swing.event.ListSelectionListener;
 public class Controller implements ActionListener, ListSelectionListener {
 
     private InvoiceFrame frame;
-    private addInvoiceDialog inv_Dialog;
-    private addLineDialog item_Dialog;
+    private sigHeader header;
+    private sigItem item;
+    private String name ;
+    private addInvoiceDialog invDialog;
+    private addLineDialog itemDialog;
 
     public Controller(InvoiceFrame frame) {
         this.frame = frame;
@@ -38,26 +41,26 @@ public class Controller implements ActionListener, ListSelectionListener {
                 deleteInvoice();
                 break;
             case "New Line":
-                NewLine();
+                newLine();
                 break;
             case "Delete Line":
-                DeleteLine();
+                deleteLine();
                 break;
-                   
+
             case "createInvoice":
-                AddInvOk();
+                addInvOk();
                 break;
-                
-            case "cancel Invoice":
-                CancelInvoice();
+
+            case "cancelInvoice":
+                cancelInvoice();
                 break;
-            case "create Line":
-                CreateLine();
+            case "createLine":
+                createLine();
                 break;
-            case "cancel Line":
-                CancelLine();
-                break;  
-                
+            case "cancelLine":
+                cancelLine();
+                break;
+
             case "Open File":
 
                 frame.setInvoices(null);
@@ -68,47 +71,46 @@ public class Controller implements ActionListener, ListSelectionListener {
                 frame.setHeaderTabel(invoiceTable);
                 frame.getTableInvoiceHeader().setModel(invoiceTable);
                 frame.getHeaderTabel().fireTableDataChanged();
-           
+
                 break;
 
             case "Save File":
 
                 FileOperations fileOperations1 = new FileOperations(frame);
 
-            
+
                 fileOperations1.saveFile(frame.getInvoices());
-            
-            
+
+
                 break;
 
-                
+
         }
     }
 
     private void newInvoice() {
-        inv_Dialog = new addInvoiceDialog(frame);
-        inv_Dialog.setVisible(true);
+        invDialog = new addInvoiceDialog(frame);
+        invDialog.setVisible(true);
 
     }
-
     private void deleteInvoice() {
-         int row = frame.getTableInvoiceHeader().getSelectedRow();
+        int row = frame.getTableInvoiceHeader().getSelectedRow();
         if(row!= -1){
             frame.getInvoices().remove(row);
             frame.getHeaderTabel().fireTableDataChanged();
-            
+
         }
     }
 
-    private void NewLine() {
-        item_Dialog = new addLineDialog(frame);
-        item_Dialog.setVisible(true);
-        
+    private void newLine() {
+        itemDialog = new addLineDialog(frame);
+        itemDialog.setVisible(true);
+
     }
 
-    private void DeleteLine() {
+    private void deleteLine() {
         int invoiceSelected= frame.getTableInvoiceHeader().getSelectedRow();
-          int row = frame.getTableInvoiceLines().getSelectedRow();
+        int row = frame.getTableInvoiceLines().getSelectedRow();
 
         if((invoiceSelected!=-1) && (row!= -1)){
             sigHeader invoice = frame.getInvoices().get(invoiceSelected);
@@ -117,46 +119,54 @@ public class Controller implements ActionListener, ListSelectionListener {
             ShowLineTabel line = new ShowLineTabel(invoice.getItems());
             frame.getTableInvoiceLines().setModel(line);
             line.fireTableDataChanged();
-    }
+        }
     }
 
 
-    public void AddInvOk() {
-      String date= inv_Dialog.getInvoiceDate().getText();
-      String customer = inv_Dialog.getCustomerName().getText();
-      //get the total invoices number
-      int number= frame.getTotalInvNum();
-      number++;
-        sigHeader newInvoice = new sigHeader(number,customer,date);
+    public void addInvOk() {
+        String date= invDialog.getInvoiceDate().getText();
+        String customer = invDialog.getCustomerName().getText();
+        //get the total invoices number
+        int num= frame.getTotalInvNum();
+        num++;
+        sigHeader newInvoice = new sigHeader(num,customer,date);
         frame.getInvoices().add(newInvoice);
         frame.getHeaderTabel().fireTableDataChanged();
 
-        inv_Dialog.setVisible(false);
-        inv_Dialog.dispose();
-        inv_Dialog=null;
-        
+        invDialog.setVisible(false);
+        invDialog.dispose();
+        invDialog=null;
+
     }
 
+    public sigHeader getInvoiceByNum(int num){
+        for(sigHeader inv: frame.getInvoices()){
+            if(num==inv.get_Num()){
+                return inv;
+            }
+        }
+        return null;
+    }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void CancelInvoice() {
-        inv_Dialog.setVisible(false);
-        inv_Dialog.dispose();
-        inv_Dialog=null;
+    private void cancelInvoice() {
+        invDialog.setVisible(false);
+        invDialog.dispose();
+        invDialog=null;
     }
 
-    private void CreateLine() {
-        
-      int invoiceSelected= frame.getTableInvoiceHeader().getSelectedRow();
+    private void createLine() {
+
+        int invoiceSelected= frame.getTableInvoiceHeader().getSelectedRow();
         if(invoiceSelected!=-1){
             sigHeader invoice = frame.getInvoices().get(invoiceSelected);
-            String item= item_Dialog.getItemName().getText();
-            String unitPrice = item_Dialog.getUnitPrice().getText();
-            String quantity = item_Dialog.getQuantity().getText();
+            String item= itemDialog.getItemName().getText();
+            String unitPrice = itemDialog.getUnitPrice().getText();
+            String quantity = itemDialog.getQuantity().getText();
             double itemUnitPrice = Double.parseDouble(unitPrice);
             int itemQuantity = Integer.parseInt(quantity);
             sigItem newLine = new sigItem(item,itemQuantity,itemUnitPrice,invoice);
@@ -167,15 +177,15 @@ public class Controller implements ActionListener, ListSelectionListener {
             line.fireTableDataChanged();
 
         }
-        item_Dialog.setVisible(false);
-        item_Dialog.dispose();
-        item_Dialog=null;
-        
+        itemDialog.setVisible(false);
+        itemDialog.dispose();
+        itemDialog=null;
+
     }
 
-    private void CancelLine() {
-        item_Dialog.setVisible(false);
-        item_Dialog.dispose();
-        item_Dialog=null;
+    private void cancelLine() {
+        itemDialog.setVisible(false);
+        itemDialog.dispose();
+        itemDialog=null;
     }
 }
